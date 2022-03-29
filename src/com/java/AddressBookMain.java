@@ -1,11 +1,13 @@
 package com.java;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class AddressBookMain {
 	private static Scanner sc = new Scanner(System.in);
@@ -25,7 +27,8 @@ public class AddressBookMain {
 
 		System.out.println("Enter your choice");
 		System.out.println(
-				"1 : Add new contact    2 : Edit contact  3 : Delete contact  4: Add Multiple Contacts 5: Display Contacts");
+				"1 : Add new contact    2 : Edit contact  3 : Delete contact  4: Add Multiple Contacts 5: Display Contacts 6: Search Person 7: Person with City and State"
+						+ " 8: Count person by city and state 9: Sorted Person's by alphabetically in Address Book");
 		int choice = sc.nextInt();
 		switch (choice) {
 		case 1:
@@ -117,9 +120,51 @@ public class AddressBookMain {
 			addressbooks.displayContacts(addressBookSystem);
 			addressbooks.addContacts();
 			break;
+
+		case 6:
+			System.out.println("Search the person in perticular city or state ");
+			System.out.println("Please Enter the City Name ");
+			String cityname = sc.next();
+			System.out.println("Please Enter the State Name ");
+			String statename = sc.next();
+			addressbooks.searchPerson(cityname, statename);
+			addressbooks.addContacts();
+			break;
+		case 7:
+			viewCityAndPersonAsWellAsStateAndPesron();
+			addressbooks.addContacts();
+			break;
+		case 8:
+			addressbooks.numberOfContactsCountByCityAndState();
+			addressbooks.addContacts();
+			break;
+		case 9:
+			addressbooks.sortEntriesInAddressBookByName();
+			addressbooks.addContacts();
+			break;
 		default:
 			System.out.println("Please Enter correct choice");
 		}
+
+	}
+
+	private void searchPerson(String cityname, String statename) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void sortEntriesInAddressBookByName() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void numberOfContactsCountByCityAndState() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void viewCityAndPersonAsWellAsStateAndPesron() {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -277,6 +322,69 @@ public class AddressBookMain {
 			contactsLis.add(contact);
 			Addressvalues.setContacts(contactsLis);
 			addressBookSystem.put(addressBookName, Addressvalues);
+		}
+	}
+
+	public void searchPerson(String cityname, String statename) {
+		List<Contact> contactsList = new ArrayList<>();
+		for (Map.Entry<String, AddressBook> set : addressBookSystem.entrySet()) {
+			AddressBook addressBook = set.getValue();
+			contactsList = addressBook.getContacts();
+			boolean isPresent = contactsList.stream()
+					.anyMatch(con -> con.getCity().equals(cityname) || con.getState().equals(statename));
+			if (isPresent) {
+				contactsList.stream().filter(s -> s.getCity().equals(cityname) || s.getState().equals(statename))
+						.sorted().forEachOrdered(conts -> System.out.println("User name :" + conts.getFirstName()));
+
+			} else {
+
+				System.out.println("This peson not present in this city or state");
+			}
+
+		}
+	}
+
+	public void viewCityAndPersonAsWellAsStateAndPesron1() {
+		List<Contact> contactsList = new ArrayList<>();
+		for (Map.Entry<String, AddressBook> set : addressBookSystem.entrySet()) {
+			AddressBook addressBook = set.getValue();
+			contactsList = addressBook.getContacts();
+			System.out.println("Person Name and His/her city");
+			contactsList.stream()
+					.forEachOrdered(con -> System.out.println(con.getFirstName() + "     " + con.getCity()));
+			System.out.println("Person Name and His/her State");
+			contactsList.stream()
+					.forEachOrdered(con -> System.out.println(con.getFirstName() + "     " + con.getState()));
+		}
+
+	}
+
+	public void numberOfContactsCountByCityAndState1() {
+		List<Contact> contactsList = new ArrayList<>();
+		for (Map.Entry<String, AddressBook> set : addressBookSystem.entrySet()) {
+			AddressBook addressBook = set.getValue();
+			contactsList = addressBook.getContacts();
+			Map<Object, Integer> list = contactsList.parallelStream()
+					.collect(Collectors.toConcurrentMap(w -> w.getCity(), w -> 1, Integer::sum));
+			Map<Object, Integer> state = contactsList.parallelStream()
+					.collect(Collectors.toConcurrentMap(w -> w.getState(), w -> 1, Integer::sum));
+			System.out.println("City Name" + list.keySet() + ":  Number of persons in City " + list.values()
+					+ "        State Name" + state.keySet() + ":  Number of persons in State " + state.values());
+
+		}
+
+	}
+
+	public void sortEntriesInAddressBookByName1() {
+		List<Contact> contactsList = new ArrayList<>();
+		for (Map.Entry<String, AddressBook> set : addressBookSystem.entrySet()) {
+			AddressBook addressBook = set.getValue();
+			contactsList = addressBook.getContacts();
+			System.out.println("Sorted Person's by alphabetically in Address Book");
+			List<Contact> sortedList = contactsList.stream().sorted(Comparator.comparing(Contact::getFirstName))
+					.collect(Collectors.toList());
+
+			sortedList.forEach(con -> System.out.println(con.getFirstName()));
 		}
 	}
 }
