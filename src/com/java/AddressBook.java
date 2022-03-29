@@ -1,8 +1,15 @@
 package com.java;
 
-public class AddressBook {
-	public static void main(String[] args) {
-		System.out.println("Welcome to Address Book Program");
+import java.util.List;
 
+public class AddressBook {
+	private List<Contact> contacts;
+
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
 	}
 }
